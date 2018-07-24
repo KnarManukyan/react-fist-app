@@ -11,13 +11,13 @@ class Square extends React.Component {
     }
   }
   onClick = () => {
-    if(this.state.text === null){
+    console.log(this.props.clear);
+    if(this.props.clear){
+      this.setState({text: null});
+    } else if (this.state.text === null){
       this.setState ({text: this.props.status});
       this.props.onChange(this.state.number);
-    } else{
-      alert("what the hell are you doing!!");
     }
-
   }
   render() {
     return (
@@ -37,6 +37,9 @@ class Board extends React.Component {
               [' ', ' ', ' '],
               [' ', ' ', ' ']],
       winner: null,
+      clear: false,
+      x: 0,
+      o: 0
     }
   }
   findWinner = () => {
@@ -74,20 +77,29 @@ class Board extends React.Component {
     this.state.board[Math.floor(num/3)][num%3] = this.state.status;
     (this.state.status === 'X' ? this.setState({status: 'O'}) : this.setState({status: 'X'}));
     this.findWinner();
-    //console.log(this.state.winner);
-    if(this.state.winner === "tie"){
-      alert(this.state.winner);
-    } else if(this.state.winner){
+    if(this.state.winner){
+      if(this.state.winner === "tie"){
+        alert(this.state.winner);
+      } else {
       alert("The winner is " + this.state.winner);
-       window.location.reload();
+      (this.state.winner === "X" ?  this.state.x++ : this.state.o++);
+      //this.setState({x: this.state.x++}) : this.setState({o: this.state.o++}));
+      }
+      this.setState({board: [[' ', ' ', ' '],
+                              [' ', ' ', ' '],
+                              [' ', ' ', ' ']],
+                      winner: null,
+                      clear: true});
+      window.location.reload();
     }
-    }
+  }
   renderSquare(i) {
-    return <Square squareNumber = {i} onChange = {this.onChange} status = {this.state.status}/>
+    return <Square squareNumber = {i} onChange = {this.onChange} status = {this.state.status} clear = {this.state.clear}/>
   }
   render() {
     return (
       <div>
+        <div className="winner"> X: {this.state.x}  O:{this.state.o}</div>
         <div className="status"> Next player is {this.state.status}</div>
         <div className="board-row">
           {this.renderSquare(0)}
